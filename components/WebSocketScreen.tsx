@@ -1,3 +1,4 @@
+import { setGlobalConnection } from "@/constants/global";
 import React, { useRef, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
@@ -17,12 +18,26 @@ export default function WebSocketScreen() {
     socket.onopen = () => {
       console.log("Connected");
       setStatus("CONNECTED");
-      socket.send(JSON.stringify({ type: "HELLO" }));
+      setGlobalConnection(true);
+      socket.send(JSON.stringify({ type: "Request for data" }));
     };
 
     socket.onmessage = (event) => {
-      console.log("Message received:", event.data);
+      console.log("Message received from server:", event.data);
       setMessages((prev) => [...prev, event.data]);
+
+       try {
+    const msg =
+      typeof event.data === "string"
+        ? JSON.parse(event.data)
+        : event.data;
+
+    console.log("Parsed:", msg);
+    handleMessage(msg);
+  } catch (e) {
+    console.log("⚠️ Non-JSON message received:", event.data);
+  }
+      
     };
 
     socket.onerror = (error) => {
@@ -42,7 +57,33 @@ export default function WebSocketScreen() {
   const disconnectWebSocket = () => {
     ws.current?.close();
     ws.current = null;
+    setGlobalConnection(false);
   };
+
+
+ const handleMessage = (raw: any) => {
+ 
+
+  // 1) Parse safely if needed
+  let msg = raw;
+  try {
+    if (typeof raw === "string") {
+      msg = JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn("Invalid JSON:", e);
+    return;
+  }
+
+  // 3) SNAPSHOT: replace state
+  if (msg.type === "SNAPSHOT") {
+    
+   // insertReading(msg.data);
+
+    return;
+  }
+
+};
 
   return (
     <View style={styles.container}>
