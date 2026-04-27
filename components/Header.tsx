@@ -34,7 +34,7 @@ const Header = () => {
           <Text style={styles.statusText}>LIVE</Text>
         </View>
 
-        <Text style={styles.timestamp}>Last: {lastUpdated}</Text>
+        <Text style={styles.timestamp}>Last updated: {lastUpdated}</Text>
       </View>
 
       
@@ -45,19 +45,21 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 100,
     paddingHorizontal: 16,
-    paddingBottom: 50,
-    backgroundColor: "#0f172a",
+    paddingBottom: 40,
+    backgroundColor: "#0f2a1a",
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
     color: "white",
+    textAlign: "center",
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 8,
     alignItems: "center",
+    paddingVertical: 5,
   },
   statusPill: {
     paddingHorizontal: 10,
@@ -78,7 +80,8 @@ const styles = StyleSheet.create({
   },
   timestamp: {
      color: "white",
-    fontSize: 12,
+    fontSize: 14,
+    fontWeight: "500",
   },
   summary: {
     marginTop: 10,

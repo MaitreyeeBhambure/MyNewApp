@@ -11,7 +11,7 @@ export default function SensorTile({ type }: { type: string }) {
   useEffect(() => {
     clearDB(); 
     fetchData();
-   //startMockStream();
+   startMockStream();
     // if(getGlobalConnection())
     // {startMockStream();}
   
@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
   card: {
-    backgroundColor: "#2ecc71",
+    backgroundColor: "#ffffff",
+    borderColor: "#e5e7eb",
     padding: 10,
     borderRadius: 8,
     marginBottom: 8,
