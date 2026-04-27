@@ -95,7 +95,7 @@ if (msg.type === "DELTA") {
 
   return (
     <View style={styles.container}>
-       <Text style={styles.title}>📡 Device Connection</Text>
+       <Text style={styles.title}>📡 Device Logs</Text>
       <Text>Connection Status: {status}</Text>
 
       <Button title="Connect" onPress={connectWebSocket} />

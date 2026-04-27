@@ -37,7 +37,7 @@ export default function SensorTile() {
   return ( 
 
      <View style={styles.card}>
-     <Text style={styles.title}>📡 Live Titles</Text>
+     <Text style={styles.title}> 📊  Live Data</Text>
     {readings ? (
       <View>
         <Text>🌡 TEMP: {readings.temp.toFixed(1)}°C</Text>

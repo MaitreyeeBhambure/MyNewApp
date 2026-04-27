@@ -37,7 +37,7 @@ const Header = () => {
         <Text style={styles.timestamp}>Last updated: {lastUpdated}</Text>
       </View>
 
-      
+      <Text style={styles.title}>📊 Real-Time Sensor Status Overview</Text>
     </View>
   );
 };

@@ -1,18 +1,21 @@
 import * as SQLite from "expo-sqlite";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Sparkline } from "./Sparkline";
 
 const db = SQLite.openDatabaseSync("greenhouse.db");
 
-const WINDOW_SIZE = 20;
+const WINDOW_SIZE = 900;
 
 const EventList = () => {
   
 const [events, setEvents] = useState<any[]>([]);
+ const [co2Series, setCo2Series] = useState<number[]>([]);
 
   let intervalRef: any = null;
   let buffer: number[] = [];
   let ewma = 0;
+  const uiThrottleRef = useRef(0);
 
  useEffect(() => {
   
@@ -99,10 +102,18 @@ const [events, setEvents] = useState<any[]>([]);
     "SELECT temp, humidity, co2 FROM readings WHERE id = 1") as { temp: number; humidity: number; co2: number };
 
       // 👉 pick one metric for demo (CO2 best for anomalies)
-      const value = result.co2;
+      //const value = result.co2;
+       
+
+      const raw = result?.co2;
+
+  if (typeof raw !== "number" || isNaN(raw)) return;
+   const value = raw;
 
       // maintain sliding window
-      buffer.unshift(value);
+      if (!isNaN(value)) {
+  buffer.unshift(value);
+}
       if (buffer.length > WINDOW_SIZE) buffer.pop();
 
       const anomalies = detectAnomaly(value);
@@ -111,13 +122,29 @@ const [events, setEvents] = useState<any[]>([]);
         setEvents((prev) => [...anomalies, ...prev]);
        console.log("Anomalies detected:", anomalies);
       }
+
+      // -------------------------
+      // throttled Sparkline UI update (5 sec)
+      // -------------------------
+      const now = Date.now();
+      if (now - uiThrottleRef.current > 5000) {
+        uiThrottleRef.current = now;
+        setCo2Series([...buffer]);
+      }
+
     }, 1000);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>⚠️ Event List</Text>
+       <Text style={styles.header}>📈 SparkLine Graph(CO₂ Trend)</Text>
 
+      {/* Sparkline */}
+     <Sparkline data={co2Series} width={320} height={90} />
+
+     <View style={styles.line} />
+
+      <Text style={styles.header}>⚠️ Event List</Text>
       <FlatList
         data={events}
         keyExtractor={(_, index) => index.toString()}
@@ -135,21 +162,28 @@ const [events, setEvents] = useState<any[]>([]);
 
 const styles = StyleSheet.create({
   container: {
-    height: 300,
+    height: 500,
     paddingTop: 20,
     paddingHorizontal: 16,
-    paddingBottom: 50,
+    paddingBottom: 10,
     backgroundColor: "#ffffff",
     borderColor: "#e5e7eb",
     marginTop: 10,
     marginHorizontal:10,
   },
+  line: {
+  height: 1,
+  backgroundColor: "#000000",
+  marginVertical: 10,
+   marginTop: 10,
+},
   header: {
     fontSize: 20,
     fontWeight: "700",
     color: "black",
     textAlign: "center",
     marginBottom: 10,
+    marginTop: 20,
   },
   card: {
     backgroundColor: "#1e293b",

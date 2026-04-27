@@ -1,3 +1,4 @@
+import DebugPanel from "@/components/DebugPanel";
 import EventList from "@/components/EventList";
 import Header from "@/components/Header";
 import SensorTile from "@/components/SensorTile";
@@ -16,7 +17,8 @@ export default function HomeScreen() {
     <View>
       <Header />
       <SensorTile />
-      <EventList />
+      <EventList /> 
+      <DebugPanel />
       <WebSocketScreen />
     </View>
     </ScrollView>
