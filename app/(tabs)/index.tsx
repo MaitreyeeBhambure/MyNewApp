@@ -15,9 +15,7 @@ export default function HomeScreen() {
      <ScrollView>
     <View>
       <Header />
-      <SensorTile type="temp" />
-      <SensorTile type="humidity" />
-      <SensorTile type="co2" />
+      <SensorTile />
       <EventList />
       <WebSocketScreen />
     </View>

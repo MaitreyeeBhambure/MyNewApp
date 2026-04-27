@@ -1,6 +1,7 @@
 import { setGlobalConnection } from "@/constants/global";
 import React, { useRef, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { insertReading, updateReading } from "./db";
 
 export default function WebSocketScreen() {
   const ws = useRef<WebSocket | null>(null);
@@ -35,7 +36,7 @@ export default function WebSocketScreen() {
     console.log("Parsed:", msg);
     handleMessage(msg);
   } catch (e) {
-    console.log("⚠️ Non-JSON message received:", event.data);
+    console.log("Non-JSON message received:", event.data);
   }
       
     };
@@ -78,15 +79,23 @@ export default function WebSocketScreen() {
   // 3) SNAPSHOT: replace state
   if (msg.type === "SNAPSHOT") {
     
-   // insertReading(msg.data);
+   insertReading(msg.data);      //initial insert to DB
 
     return;
   }
 
+if (msg.type === "DELTA") {
+   console.log("Delta:");
+   updateReading(msg.data);      //initial insert to DB
+
+    return;
+    
+  }
 };
 
   return (
     <View style={styles.container}>
+       <Text style={styles.title}>📡 Device Connection</Text>
       <Text>Connection Status: {status}</Text>
 
       <Button title="Connect" onPress={connectWebSocket} />
@@ -108,6 +117,13 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     marginTop: 10,
     marginHorizontal:10,
+  },
+   title: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "black",
+    textAlign: "center",
+    marginBottom: 10,
   },
   msgText: {
     color: "#94a3b8",

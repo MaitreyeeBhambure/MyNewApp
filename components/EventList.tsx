@@ -95,14 +95,11 @@ const [events, setEvents] = useState<any[]>([]);
     if (intervalRef) return;
 
     intervalRef = setInterval(() => {
-      const fakeData = {
-        temp: Number((20 + Math.random() * 5).toFixed(2)),
-        humidity: Number((40 + Math.random() * 20).toFixed(2)),
-        co2: Number((350 + Math.random() * 300).toFixed(2)),
-      };
+      const result = db.getFirstSync(
+    "SELECT temp, humidity, co2 FROM readings WHERE id = 1") as { temp: number; humidity: number; co2: number };
 
       // 👉 pick one metric for demo (CO2 best for anomalies)
-      const value = fakeData.co2;
+      const value = result.co2;
 
       // maintain sliding window
       buffer.unshift(value);
@@ -112,26 +109,25 @@ const [events, setEvents] = useState<any[]>([]);
 
       if (anomalies.length > 0) {
         setEvents((prev) => [...anomalies, ...prev]);
-        console.log("Anomalies detected:", anomalies);
+       console.log("Anomalies detected:", anomalies);
       }
     }, 1000);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>⚠️ Anomalies</Text>
+      <Text style={styles.header}>⚠️ Event List</Text>
 
       <FlatList
-       
         data={events}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={{ padding: 10 }}>
-            <Text style={styles.reason}>{item.type}</Text>
-            <Text>{item.reason}</Text>
-            <Text style={styles.meta}>{item.timestamp}</Text>
+            <Text style={styles.reason}>Brief Reason: {item.reason}</Text>
+            <Text style={styles.meta}>TimeStamp: {item.timestamp}</Text>
           </View>
         )}
+         showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -139,6 +135,7 @@ const [events, setEvents] = useState<any[]>([]);
 
 const styles = StyleSheet.create({
   container: {
+    height: 300,
     paddingTop: 20,
     paddingHorizontal: 16,
     paddingBottom: 50,
@@ -148,10 +145,11 @@ const styles = StyleSheet.create({
     marginHorizontal:10,
   },
   header: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "700",
-    marginBottom: 8,
-    color: "#1e293b",
+    color: "black",
+    textAlign: "center",
+    marginBottom: 10,
   },
   card: {
     backgroundColor: "#1e293b",
@@ -161,7 +159,8 @@ const styles = StyleSheet.create({
   },
   reason: {
     color: "#fb2424",
-    fontWeight: "600",
+    fontWeight: "200",
+    fontSize: 12,
   },
   meta: {
     color: "#94a3b8",
